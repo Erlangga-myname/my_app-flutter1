@@ -1,60 +1,95 @@
-import 'package:english_words/english_words.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+//memasukan package yang dibutuhkan oleh aplikasi
+import 'package:english_words/english_words.dart';//paket bahasa inggris
+import 'package:flutter/material.dart';//paket untuk tampilan UI (material UI)
+import 'package:provider/provider.dart';//paket untuk interaksi aplikasi
 
+//fungsi main (fungsi utama)
 void main() {
-  runApp(MyApp()); //memanggil fungsi runAPP (menjalankan seluruh apk di dalam myAPP)
+  runApp(MyApp());//meamnggil fungsi runApp (yang menjalankan keseluruhan aplikasi di dalam myApp())
 }
 
-class MyApp extends StatelessWidget { //membuat apk abstrak dari statelessWidget (template apk), apk nya bernama MyAPP
-  const MyApp({super.key}); //Menunjukan bahwa apk ini akan tetap, tidak dapat berubah setalah build
+//membuat abstrak aplikasi dari statelessWidget (template apikasi bernama myApp)
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});//menunjukan bahwa aplikasi ini akan tetap, tidak berubah setlah di-build
 
-  @override //mengganti nilai lama yg sudah ada di template, dengan nilai-nilai yg baru (replace/over write)
-  Widget build(BuildContext context) { //fungsi build yg membangun UI (mengatur posisi widget)
-    return ChangeNotifierProvider(  //ChangeNotifierProvider mendengarkan/mendeteksi semua interaksi yang terjadi di apk(like pada post)
-      create: (context) => 
-      MyAppState(), //s
-      child: MaterialApp( //pada state ini, menggunakan style desain materialUI
-        title: 'Namer App', //diberi judul (NamerApp)
-        theme: ThemeData( //data tema apklikasi, diberi warna (deepOrange)
-          useMaterial3: true, //versi MAterialUI yang dipakai versi 3
+  @override//mengganti niali lama yang sudah ada di template, dengan nilai nilai yang baru (replace / overwrite)
+  Widget build(BuildContext context) {//fungsi build adalah fungsi yang membanggun UI (mengatur posisi widget, dst)
+  //ChangeNotifierProvider mendengarkan/mendeteksi semua interaksi yang terjadi di aplikasi
+    return ChangeNotifierProvider(
+      create: (context) => MyAppState(),//membuat satu state bernama myAppState
+      child: MaterialApp(//pada state ini, menggunakan style desain MateralUI
+        title: 'Namer App',//diberi judul Namer App
+        theme: ThemeData(//data tema aplikasi, diberi warna deepOrange
+          useMaterial3: true,//versi materialUI yang dipakai versi 3
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: MyHomePage(),
+        home: MyHomePage(),//nama halaman "myHomePage" pada "myAppState"
       ),
     );
   }
 }
 
- //mendefinisikan MyAppstate
-class MyAppState extends ChangeNotifier { //state MyAppState diisi dengan 2 kata random yang digabungkan. kata random tsb disimpan di variable WordPair
+//medefinisikan myAppState
+class MyAppState extends ChangeNotifier {
+  //state myAppState diisi dengan 2 kata random tsb disimpan di variable WordPair
   var current = WordPair.random();
+
   void getNext() {
     current = WordPair.random();
     notifyListeners();
-  }
+}
 }
 
-//membuat layout pada halaman HomePage
+// ...
+
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>(); //widget menggunakan state MyAppState
-
-    //di bawah ini adalah kode program untuk menyusun layout
+    var appState = context.watch<MyAppState>();
+    var pair = appState.current;               
     return Scaffold(
       body: Column(
         children: [
-          Text('A random idea:'),
-          Text(appState.current.asLowerCase), //mengambil random text dari appstate pada variable WordPair current, lalu diubah menjadi huruf kecil semua
-           ElevatedButton( //membuat button timbul di dalam body
-            onPressed: () { //fungsi yang dieksekusi ketika button ditekan
+          Text('A random AWESOME idea:'),
+          BigCard(pair: pair),                
+          ElevatedButton(
+            onPressed: () {
               appState.getNext();
             },
-            child: Text('Next'), //berikan teks 'next' pada button (sebagai child)
+            child: Text('Next'),
           ),
         ],
       ),
     );
   }
 }
+
+class BigCard extends StatelessWidget {
+  const BigCard({
+    super.key,
+    required this.pair,
+  });
+
+  final WordPair pair;
+
+  @override
+  Widget build(BuildContext context) {
+     final theme = Theme.of(context);
+final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+    
+
+    return Card(
+      color: theme.colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+       child: Text(pair.asLowerCase, style: style),
+      ),
+    );
+  }
+}
+
+
+
+// ...
