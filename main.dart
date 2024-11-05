@@ -1,136 +1,84 @@
-//memasukan package yang dibutuhkan oleh aplikasi
-import 'package:english_words/english_words.dart';//paket bahasa inggris
-import 'package:flutter/material.dart';//paket untuk tampilan UI (material UI)
-import 'package:provider/provider.dart';//paket untuk interaksi aplikasi
+import 'package:flutter/material.dart';
 
-//fungsi main (fungsi utama)
 void main() {
-  runApp(MyApp());//meamnggil fungsi runApp (yang menjalankan keseluruhan aplikasi di dalam myApp())
+  runApp(MyApp());
 }
 
-//membuat abstrak aplikasi dari statelessWidget (template apikasi bernama myApp)
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});//menunjukan bahwa aplikasi ini akan tetap, tidak berubah setlah di-build
-
-  @override//mengganti niali lama yang sudah ada di template, dengan nilai nilai yang baru (replace / overwrite)
-  Widget build(BuildContext context) {//fungsi build adalah fungsi yang membanggun UI (mengatur posisi widget, dst)
-  //ChangeNotifierProvider mendengarkan/mendeteksi semua interaksi yang terjadi di aplikasi
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),//membuat satu state bernama myAppState
-      child: MaterialApp(//pada state ini, menggunakan style desain MateralUI
-        title: 'Namer App',//diberi judul Namer App
-        theme: ThemeData(//data tema aplikasi, diberi warna deepOrange
-          useMaterial3: true,//versi materialUI yang dipakai versi 3
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        ),
-        home: MyHomePage(),//nama halaman "myHomePage" pada "myAppState"
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LoginPage(),
     );
   }
 }
 
-//medefinisikan myAppState
-class MyAppState extends ChangeNotifier {
-  //state myAppState diisi dengan 2 kata random tsb disimpan di variable WordPair
-  var current = WordPair.random();
-
-  void getNext() {
-    current = WordPair.random();
-    notifyListeners();
-}
-var favorites = <WordPair>[];
-
-  void toggleFavorite() {
-    if (favorites.contains(current)) {
-      favorites.remove(current);
-    } else {
-      favorites.add(current);
-    }
-    notifyListeners();
-  }
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
 }
 
-// ...
-  
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
 
-class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    var pair = appState.current; 
-
-    IconData icon;
-    if (appState.favorites.contains(pair)) {
-      icon = Icons.favorite;
-    } else {
-      icon = Icons.favorite_border;
-    }
-
     return Scaffold(
-      body: Center(
-        child: Column(
-           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            BigCard(pair: pair), 
-             SizedBox(height: 10),               
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-
-                ElevatedButton.icon(
-                  onPressed: () {
-                    appState.toggleFavorite();
-                  },
-                  icon: Icon(icon),
-                  label: Text('Like'),
+      appBar: AppBar(
+        title: Text("Login Page"),
+        backgroundColor: Colors.blue,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Image.asset(
+                'logo.png',
+                height: 100,
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(), // Membuat kolom menjadi kotak
                 ),
-                SizedBox(width: 10),
-                
-                ElevatedButton(
-                  onPressed: () {
-                    appState.getNext();
-                  },
-                  child: Text('Next'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(), // Membuat kolom menjadi kotak
                 ),
-              ],
-            ),
-          ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Process the form data
+                  }
+                },
+                child: Text('Login'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
-class BigCard extends StatelessWidget {
-  const BigCard({
-    super.key,
-    required this.pair,
-  });
-
-  final WordPair pair;
-
-  @override
-  Widget build(BuildContext context) {
-     final theme = Theme.of(context);
-final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
-    
-
-    return Card(
-      color: theme.colorScheme.primary,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-       child: Text(
-          pair.asLowerCase,
-          style: style,
-          semanticsLabel: "${pair.first} ${pair.second}",
-      ),
-      ),
-    );
-  }
-}
-
-
-
-// ...
